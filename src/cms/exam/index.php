@@ -157,7 +157,7 @@
                         $dte1->setTimeZone( new DateTimeZone($offset)) ;
                         $dtecreated = $dte1->format('m/d/Y h:i:s A');                        
                         ?>
-                    <tr ondblclick="window.open('exam/edit.php?id=<?php echo $row['id']; ?>', 'newwindow', 'width = 1000px, height = 500px');">
+                    <tr ondblclick="const d=new Date(); let offset=d.getTimezoneOffset(); debugger; window.open('exam/edit.php?id=<?php echo $row['id']; ?>&code=<?php echo $row['exam_code']; ?>&offset='+offset, 'newwindow', 'width = 1000px, height = 500px');">
                         <td>
                         <a href="#" onclick="SetCode(<?php echo $row['id']; ?>)" title="Generate New Exam Voucher Code"><span class="mif-loop2 fg-blue"></span></a>
                         <?php echo $row['exam_code']; ?>
