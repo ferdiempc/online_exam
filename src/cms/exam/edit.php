@@ -330,14 +330,45 @@
                                 </thead>
                                 <tbody>
                                     <?php
+                                        $examcode = $_GET['code'];
+
+                                        $offset = '+0800';
+                                        if (isset($_GET['offset'])) {
+                                            $offset = $_GET['offset'];
+                                        }
+                                        $sign = substr($offset, 0, 1);
+                                        $offset = str_pad( substr($offset, 1), 4, "0", STR_PAD_BOTH);
+                                        $offset = str_pad( ($offset / 60) , 4, "0", STR_PAD_BOTH);
+                                        if (str_contains($sign, "-")) {
+                                            $sign = "+";
+                                        } elseif (str_contains($sign, "+")) {
+                                            $sign = "-";
+                                        } else {
+                                            $sign = "+";
+                                        }
+                                        $offset = $sign . $offset;
+                                        // error_log("offset = $offset");
+
                                         $cn->CloseRecordset();
-                                        $cn->query("SELECT * FROM exam_code WHERE exam_id = $examid");
+                                        // $cn->query("SELECT * FROM exam_code WHERE exam_id = $examid");
+                                        $cn->query("SELECT * FROM exam_code WHERE exam_code = '$examcode'");
                                         while($row = $cn->getrow()) {
+                                            $dte1 = new DateTime($row['dtestart'], new DateTimeZone('UTC'));
+                                            $dte1->setTimeZone( new DateTimeZone($offset)) ;
+                                            $dtestart = $dte1->format('m/d/Y h:i:s A');
+                    
+                                            $dte1 = new DateTime($row['dteend'], new DateTimeZone('UTC'));
+                                            $dte1->setTimeZone( new DateTimeZone($offset)) ;
+                                            $dteend = $dte1->format('m/d/Y h:i:s A');
+                                            
+                                            $dte1 = new DateTime($row['dtecreated'], new DateTimeZone('UTC'));
+                                            $dte1->setTimeZone( new DateTimeZone($offset)) ;
+                                            $dtecreated = $dte1->format('m/d/Y h:i:s A');                                            
                                     ?>
                                     <tr ondblclick="GenerateTableExaminee('<?php echo $row['exam_code']; ?>')">
                                         <td><?php echo $row['exam_code'] ?></td>
-                                        <td><?php echo date_format(date_create($row['dtestart']), 'M d, Y h:i A') ?></td>
-                                        <td><?php echo date_format(date_create($row['dteend']), 'M d, Y h:i A') ?></td>
+                                        <td><?php echo $dtestart; ?></td>
+                                        <td><?php echo $dteend; ?></td>
                                         <td class="align-center"><a href="#" onclick="window.open('../reports/examsheet.php?exam=<?php echo $row['exam_id']; ?>&code=<?php echo $row['exam_code']; ?>', '_blank', 'width = 1000px, height = 500px');" title="Load Examinees"><span class="mif-file-empty" title="View Answer Sheet"></span></a></td>
                                     </tr>
                                     <?php } ?>
